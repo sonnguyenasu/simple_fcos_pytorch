@@ -29,7 +29,7 @@ class Loss(nn.Module):
     loss = 0
     for i in range(1,self.num_class+1):
       tgt = target*(target==i)
-      tgt = torch.where(target!=0,1,0)
+      tgt = tgt.gt(0).float()
       loss += self._focal_loss(predict[:,i-1,:,:],tgt)
     return loss
     

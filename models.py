@@ -85,4 +85,4 @@ class Head(nn.Module):
     reg = torch.exp(self.reg_branch(reg_f))
     center = torch.nn.functional.sigmoid(center)
     cls = torch.nn.functional.sigmoid(cls)
-    return torch.cat([cls,center,reg],dim=1)
+    return torch.cat([cls,reg,center],dim=1)

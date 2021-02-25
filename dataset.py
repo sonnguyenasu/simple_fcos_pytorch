@@ -45,7 +45,7 @@ class Base(Dataset):
             cv2.fillPoly(temp_mask, [poly],1)
             
             temp_mask = np.where(temp_mask>all_boxes,1,0)
-            class_map[:,:,clses[idx]] += temp_mask.copy()*(clses[idx])
+            class_map[:,:,clses[idx]-1] += temp_mask.copy()*(clses[idx])
             d1 = index_x-vertice[0]
             d1[d1<0] = 0
             d2 = index_y-vertice[1]
@@ -59,6 +59,7 @@ class Base(Dataset):
             geo_map[:,:,2] += d3*temp_mask
             geo_map[:,:,3] += d4*temp_mask
             min_lr = np.where(d1>d3,d3,d1)
+            #print(min_lr.max())
             inv_max_lr = np.where(d1>d3, 1/(d1+self.eps), 1/(d3+self.eps))
             min_tb = np.where(d2>d4,d4,d2)
             inv_max_tb = np.where(d2>d4,1/(d2+self.eps),1/(d4+self.eps))

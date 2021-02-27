@@ -7,13 +7,13 @@ if torch.cuda.is_available():
   device = 'cuda'
 else:
   device = 'cpu'
-base = FirstDataset('/content/export/images','/content/export/labels')
-loader = DataLoader(base,batch_size=4,shuffle=True)
-num_class = 1
+base = FirstDataset('/content/train/images','/content/train/labels')
+loader = DataLoader(base,batch_size=8,shuffle=True)
+num_class = 2
 EPOCH = 10
 criterion = Loss(num_class=num_class).to(device)
 model = FCOS(num_class).to(device)
-optimizer = torch.optim.Adam(model.parameters(),1e-4)
+optimizer = torch.optim.SGD(model.parameters(),0.01)
 
 for e in range(EPOCH):
   total_loss,cls_loss,reg_loss,center_loss = 0,0,0,0
@@ -40,13 +40,15 @@ for e in range(EPOCH):
     cls_loss += cls_loss_
     center_loss += center_loss_
     reg_loss += reg_loss_
-    #if idx % 10 == 9:
-  print('-'*89)
-  print("Epoch: {}, iter: {}".format(e+1,idx+1))
-  print(f'total:{total_loss.item()/(idx+1)}')
-  print(f'cls:{cls_loss.item()/(idx+1)}')
-  print(f'regression:{reg_loss.item()/(idx+1)}')
-  print(f'center:{center_loss.item()/(idx+1)}')
-  torch.save(model.state_dict(),'/content/model_inter.pth')
+    #losses.append(total_loss/(idx%50+1))
+    if idx % 50 == 49:
+      print('-'*89)
+      print("Epoch: {}, iter: {}".format(e+1,idx+1))
+      print(f'total:{total_loss.item()/(50)}')
+      print(f'cls:{cls_loss.item()/(50)}')
+      print(f'regression:{reg_loss.item()/(50)}')
+      print(f'center:{center_loss.item()/(50)}')
+      total_loss,cls_loss,reg_loss,center_loss = 0,0,0,0
+      torch.save(model.state_dict(),'/content/model_inter.pth')
   #print(criterion(prediction,target))
 #torch.cuda.empty_cache()
